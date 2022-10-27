@@ -71,7 +71,7 @@ public class Carpark {
             + Ui.getSeparatorString() + "\n"
             + String.format(formatString, carparkId, favourited, availableLots)
             + getLotBreakdownString() + "\n"
-            + Ui.getSeparatorString() + "\n";
+            + Ui.getSeparatorString();
         return bufferString;
     }
 
@@ -208,8 +208,8 @@ public class Carpark {
 
     private void updateAvailableLotsTotal() {
         int sum = 0;
-        for (int value : allAvailableLots.values()) {
-            sum += value;
+        for (int lotNumber : allAvailableLots.values()) {
+            sum += lotNumber;
         }
         availableLots = sum;
     }
@@ -268,6 +268,10 @@ public class Carpark {
             arr[i] = arr[i].trim();
         }
         return arr;
+    }
+
+    public void setFavourite(boolean setFavourite) {
+        isFavourited = setFavourite;
     }
 
     public HashMap<LotType, Integer> getAllAvailableLots() {

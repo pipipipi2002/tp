@@ -11,7 +11,7 @@ import seedu.exception.NoFileFoundException;
  * Represents the 'favourite' class.
  */
 public class Favourite {
-    public static ArrayList<String> favouriteList;
+    private static ArrayList<String> favouriteList;
     private final FileStorage fileStorage;
     private final String directory;
     private final String file;
@@ -55,16 +55,7 @@ public class Favourite {
         fileStorage.writeDataToFile(content.toString());
     }
 
-    /**
-     * Returns the carpark IDs of all favourited carparks in a string.
-     *
-     * @return String of favourited carpark IDs.
-     */
-    public String showList() {
-        StringBuilder result = new StringBuilder();
-        for (String id : favouriteList) {
-            result.append(id).append("\n");
-        }
-        return result.toString();
+    public static ArrayList<String> getFavouriteList() {
+        return favouriteList;
     }
 }

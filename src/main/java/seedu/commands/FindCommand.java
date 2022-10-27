@@ -11,18 +11,23 @@ import seedu.exception.NoCarparkFoundException;
  */
 public class FindCommand extends Command {
     public static final String COMMAND_WORD = "find";
-
     private final String carparkID;
 
-    public FindCommand(String carparkID) {
+    /**
+     * Constructor for the {@link FindCommand} class. Passes in a carparkID and carparkList
+     * @param carparkID ID to search for
+     * @param carparkList carparkList to search against.
+     */
+    public FindCommand(String carparkID, CarparkList carparkList) {
         this.carparkID = carparkID;
+        this.carparkList = carparkList;
     }
 
 
     @Override
     public CommandResult execute() throws NoCarparkFoundException {
         final Carpark result = findThisCarpark(carparkID);
-        return new CommandResult(result.toString());
+        return new CommandResult(result.getDetailViewString());
     }
 
     /**
@@ -32,13 +37,8 @@ public class FindCommand extends Command {
      * @return Carpark with associated carparkId
      * @throws NoCarparkFoundException No such carparkId exists in the API.
      */
-    public static Carpark findThisCarpark(String searchString) throws NoCarparkFoundException {
-        if (CarparkList.CARPARK_HASH_MAP.get(searchString.toLowerCase()) == null) {
-            throw new NoCarparkFoundException();
-        } else {
-            return CarparkList.CARPARK_HASH_MAP.get(searchString.toLowerCase());
-        }
+    public Carpark findThisCarpark(String searchString) throws NoCarparkFoundException {
+        return carparkList.findCarpark(searchString);
     }
-
 
 }

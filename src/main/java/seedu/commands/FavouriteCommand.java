@@ -12,8 +12,9 @@ import seedu.files.Favourite;
  */
 public class FavouriteCommand extends Command {
     public static final String COMMAND_WORD = "favourite";
+    private static final String SEPARATOR_STRING = "===========================================";
     private final String argument;
-    private Favourite favourite;
+    private final Favourite favourite;
 
     /**
      * Constructor for FavouriteCommand
@@ -21,9 +22,10 @@ public class FavouriteCommand extends Command {
      * @param argument argument for the FavouriteCommand
      * @param favourite favourite class
      */
-    public FavouriteCommand(String argument, Favourite favourite) {
+    public FavouriteCommand(String argument, Favourite favourite, CarparkList carparkList) {
         this.argument = argument;
         this.favourite = favourite;
+        this.carparkList = carparkList;
     }
 
     /**
@@ -35,10 +37,28 @@ public class FavouriteCommand extends Command {
     public CommandResult execute() {
         try {
             if (argument.equalsIgnoreCase("list")) {
-                return new CommandResult(favourite.showList());
+                StringBuilder content = new StringBuilder();
+                boolean isEmpty = true;
+                for (String id : Favourite.getFavouriteList()) {
+                    if (id.isEmpty()) {
+                        continue;
+                    }
+                    if (isEmpty) {
+                        isEmpty = false;
+                    } else {
+                        content.append("\n" + SEPARATOR_STRING + "\n");
+                    }
+                    assert carparkList.findCarpark(id) != null : "Could not find carpark!";
+                    content.append(carparkList.findCarpark(id).toString());
+                }
+                if (isEmpty) {
+                    return new CommandResult("There is no favourites in the list!");
+                }
+                return new CommandResult(content.toString().trim());
             } else {
-                Carpark result = findThisCarpark(argument);
+                Carpark result = carparkList.findCarpark(argument);
                 setFavourite(result.getCarparkId());
+                result.setFavourite(true);
                 return new CommandResult("Added Carpark " + argument + " to favourites!");
             }
         } catch (NoCarparkFoundException e) {
@@ -59,26 +79,11 @@ public class FavouriteCommand extends Command {
      * @throws DuplicateCarparkException If carpark ID is already in favourites.
      */
     public void setFavourite(String carparkId) throws FileWriteException, DuplicateCarparkException {
-        boolean containsSearchStr = favourite.favouriteList.stream().anyMatch(carparkId::equalsIgnoreCase);
+        boolean containsSearchStr = Favourite.getFavouriteList().stream().anyMatch(carparkId::equalsIgnoreCase);
         if (containsSearchStr) {
             throw new DuplicateCarparkException();
         }
-        favourite.favouriteList.add(carparkId);
+        Favourite.getFavouriteList().add(carparkId);
         favourite.writeFavouriteList();
-    }
-
-    /**
-     * Finds the carpark with the associated carparkId
-     *
-     * @param searchString String of the carparkId that user has inputted.
-     * @return Carpark with associated carparkId
-     * @throws NoCarparkFoundException No such carparkId exists in the API.
-     */
-    public static Carpark findThisCarpark(String searchString) throws NoCarparkFoundException {
-        if (CarparkList.CARPARK_HASH_MAP.get(searchString.toLowerCase()) == null) {
-            throw new NoCarparkFoundException();
-        } else {
-            return CarparkList.CARPARK_HASH_MAP.get(searchString.toLowerCase());
-        }
     }
 }
